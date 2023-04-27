@@ -1,0 +1,324 @@
+Original test results from an old Core 2 Duo
+
+C
+=
+
+	#include <stdio.h>
+	
+	int main()
+	{
+		for (int i = 0; i < 1000 * 1000 * 1000; i++) {
+			double j = i / 9.0;
+			if (i % (100 * 1000 * 1000) == 0)
+				printf("%f\n", j);
+		}
+		return 0;
+	}
+
+* gcc -std=gnu99 -o test test.c
+real 18.56
+
+* gcc -std=gnu99 -Os -o test test.c
+real 6.11
+
+* gcc -std=gnu99 -O2 -o test test.c
+real 2.44
+
+Java
+====
+
+	class test {
+		public static void main(String[] args) {
+			for (int i = 0; i < 1000 * 1000 * 1000; i++)
+			{
+				double j = i / 9.0;
+				if (i % (100 * 1000 * 1000) == 0)
+				{
+					System.out.println(j);
+				}
+			}
+		}
+	}
+
+* javac test.java
+real 2.76
+
+Julia
+=====
+
+	function main()
+		i = 0
+		while i < 1000 * 1000 * 1000
+			j = i / 9.0
+			if i % (100 * 1000 * 1000) == 0
+				println(j)
+			end
+			i += 1
+		end
+	end
+
+* julia billion.jl
+real 6.79
+
+	i = 0
+	while i < 1000 * 1000 * 1000
+		j = i / 9.0
+		if i % (100 * 1000 * 1000) == 0
+			println(j)
+		end
+		i += 1
+	end
+
+* julia billion.jl
+real 444.05
+
+Haskell
+=======
+
+	billion = 1000 * 1000 * 1000
+	divisor = 100 * 1000 * 1000
+
+	loop :: Int -> IO ()
+	loop i
+	  | i `mod` divisor == 0 = do
+	    print j
+	    loop $ i + 1
+	  | i < billion = loop $ i + 1
+	  | otherwise = return ()
+	  where j = fromIntegral i / 9.0
+
+	main = loop 0
+
+* ghc -O2 test.hs
+real 7.89
+
+JS
+==
+
+	'use strict';
+	for (var i = 0; i < 1000 * 1000 * 1000; i++)
+	{
+		var j = i / 9.0;
+		if (i % (100 * 1000 * 1000) == 0)
+			console.log(j);
+	}
+
+* node test.js
+real 20.16
+
+Neko
+====
+
+Haxe code:
+
+	class Test {
+		static public function main() {
+			var i:Int;
+			for (i in 0 ... 1000 * 1000 * 1000) {
+				var j:Float = i / 9.0;
+				if (i % (100 * 1000 * 1000) == 0) {
+					Sys.println(j);
+				}
+			}
+		}
+	}
+
+* haxe -main Test -neko Test.n
+real 120.28
+
+Lua
+===
+
+	#!/usr/bin/lua
+
+	for i = 0, 1000 * 1000 * 1000, 1 do
+		j = i / 9.0
+		if i % (100 * 1000 * 1000) == 0 then
+			print (j)
+		end
+	end
+
+* lua5.1 test.lua
+real 129.40
+
+* lua5.2 test.lua
+real 125.32
+
+* luajit-2.0.2 test.lua
+real 39.42
+
+PHP
+===
+
+	<?php
+	for ($i = 0; $i < 1000 * 1000 * 1000; $i++)
+	{
+	    $j = $i / 9.0;
+	    if ($i % (100 * 1000 * 1000) === 0)
+	        echo "$j\n";
+	}
+
+* php test.php
+PHP 5.3 (32 bit): real 287.72
+PHP 5.4 (32 bit): real 244.74
+PHP 5.5 (32 bit): real 163.39
+
+Prolog
+======
+
+	:- initialization(billion).
+
+	billion :-
+		billion(0),
+		halt(0).
+	
+	billion(1000000000).
+	billion(I) :-
+		printJ(I),
+		I2 is I + 1,
+		billion(I2).
+
+	printJ(I) :-
+		J is I / 9.0,
+		I mod 100000000 =:= 0,
+		write(J), nl.
+	printJ(_).
+
+* gplc --min-bips -o test test.pl
+real 189.58
+* swipl -f -q -O test.pl
+real 381.61
+
+Erlang
+======
+
+	-mode(native).
+
+	main([]) ->
+		billion(0).
+
+	billion(1000 * 1000 * 1000) -> true;
+	billion(I) ->
+		J = I / 9.0,
+		if I rem (100 * 1000 * 1000) =:= 0 ->
+			   io:format("~f~n", [J]);
+		   true -> true
+		end,
+		billion(I + 1).
+
+* escript test.erl
+real 200.49
+
+	-module(test).
+	-export([main/1]).
+
+	main([]) ->
+		billion(0).
+
+	billion(1000 * 1000 * 1000) -> true;
+	billion(I) ->
+		J = I / 9.0,
+		if I rem (100 * 1000 * 1000) =:= 0 ->
+			   io:format("~f~n", [J]);
+		   true -> true
+		end,
+		billion(I + 1).
+
+* erlc test.erl && escript test.beam
+real 231.76
+
+Python
+======
+
+	#!/usr/bin/python
+	
+	for i in xrange(0, 1000 * 1000 * 1000):
+		j = i / 9.0
+		if i % (100 * 1000 * 1000) == 0:
+			print j
+
+* python2.7 test.py
+real 320.52
+
+* pypy test.py
+real 36.06
+
+	#!/usr/bin/python
+
+	target = 1000 * 1000 * 1000
+	div = 100 * 1000 * 1000
+	i = 0
+	while i < target:
+		j = i / 9.0
+		if i % div == 0:
+			print j
+		i += 1
+
+* python2.7 test.py
+real 448.96
+
+* pypy test.py
+real 35.97
+
+	@micropython.native
+	def loop():
+		for i in range(0, 1000 * 1000 * 1000):
+			j = i / 9.0
+			if i % (100 * 1000 * 1000) == 0:
+				print(j)
+
+	loop()
+
+* micropython test.py
+real 147.86
+
+	@micropython.native
+	def loop():
+		target = 1000 * 1000 * 1000
+		div = 100 * 1000 * 1000
+		i = 0
+		while i < target:
+			j = i / 9.0
+			if i % div == 0:
+				print(j)
+			i += 1
+
+	loop()
+
+* micropython test.py
+real 146.36
+
+Perl
+====
+
+	#!/usr/bin/perl
+
+	for ($i = 0; $i < 1000 * 1000 * 1000; $i++)
+	{
+		$j = $i / 9.0;
+		if ($i % (100 * 1000 * 1000) == 0)
+		{
+			print "$j\n";
+		}
+	}
+
+* perl test.pl
+real 446.53
+
+Ruby
+====
+
+	#!/usr/bin/ruby
+
+	for i in 0..1000 * 1000 * 1000
+		j = i / 9.0
+		if i % (100 * 1000 * 1000) == 0
+			puts "#{j}"
+		end
+	end
+
+* ruby1.9.1 test.rb
+real 406.11
+
+* ruby1.8 test.rb
+real 1807.29

@@ -217,6 +217,16 @@ Benchmark_Ruby_31()
     nix-shell -p ruby_3_1 --run 'time -p ruby src/Billion.rb'
 }
 
+Benchmark_Ruby_32()
+{
+    nix-shell -p ruby_3_2 --run 'time -p ruby src/Billion.rb'
+}
+
+Benchmark_Ruby_32_YJIT()
+{
+    nix-shell -p ruby_3_2 --run 'time -p ruby --yjit src/Billion.rb'
+}
+
 Benchmark_Rust()
 {
     nix-shell -p rustup --run 'cd src/Rust && cargo build && time -p cargo run --release'
